@@ -1,2 +1,6 @@
 /target
 **/*.rs.bk
+
+# Make sure to ignore test output images
+*.jpeg
+*.png
