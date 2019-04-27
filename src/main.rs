@@ -5,8 +5,14 @@ fn main() {
     let img_width = 1000;
     let img_height = 1000;
 
-    let scale_x = 4.0 / img_width as f32;
-    let scale_y = 4.0 / img_height as f32;
+    let scale = 1.0;
+    let aspect_ratio = img_width as f32 / img_height as f32;
+
+    let offset_x = scale * 0.5;
+    let offset_y = scale * 0.5 * aspect_ratio;
+
+    let scale_x = scale * aspect_ratio / img_width as f32;
+    let scale_y = scale / img_height as f32;
 
     let mut img_buffer = image::ImageBuffer::new(img_width, img_height);
 
@@ -20,9 +26,8 @@ fn main() {
 
     for x in 0..img_width {
         for y in 0..img_height {
-
-            let zx = y as f32 * scale_x - 2.0;
-            let zy = x as f32 * scale_y - 2.0;
+            let zx = y as f32 * scale_x - offset_x;
+            let zy = x as f32 * scale_y - offset_y;
 
             let mut z = num_complex::Complex::new(zx, zy);
 
