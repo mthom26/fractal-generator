@@ -41,6 +41,7 @@ fn main() {
             *pixel = image::Rgb([25, i, 25]);
         }
     }
-
-    img_buffer.save("output.png").unwrap();
+    
+    let filename = format!("output_r{}_i{}.png", c.re, c.im);
+    img_buffer.save(filename).unwrap();
 }
