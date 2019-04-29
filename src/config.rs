@@ -1,7 +1,5 @@
 use clap::{App, Arg};
-
-const SCALE_LONG_HELP: &str =
-    "The scale of the fractal pattern. A higher value will result in a smaller fractal pattern.\n";
+use crate::constants::{OFFSETS_LONG_HELP, SCALE_LONG_HELP};
 
 pub struct Config {
     pub img_width: u32,
@@ -44,7 +42,7 @@ impl Config {
             .arg(
                 Arg::with_name("offsets")
                     .help("The offset of the fractal origin")
-                    .long_help("TODO")
+                    .long_help(OFFSETS_LONG_HELP)
                     .short("o")
                     .long("offset")
                     .takes_value(true)

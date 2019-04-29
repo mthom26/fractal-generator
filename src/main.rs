@@ -1,6 +1,8 @@
 use image;
 use num_complex;
 
+mod constants;
+
 mod config;
 use config::Config;
 
