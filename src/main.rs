@@ -1,20 +1,22 @@
 use image;
 use num_complex;
 
+mod config;
+use config::Config;
+
 fn main() {
-    let img_width = 1000;
-    let img_height = 1000;
+    let cfg = Config::new();
 
     let scale = 1.0;
-    let aspect_ratio = img_width as f32 / img_height as f32;
+    let aspect_ratio = cfg.img_width as f32 / cfg.img_height as f32;
 
     let offset_x = scale * 0.5;
     let offset_y = scale * 0.5 * aspect_ratio;
 
-    let scale_x = scale * aspect_ratio / img_width as f32;
-    let scale_y = scale / img_height as f32;
+    let scale_x = scale * aspect_ratio / cfg.img_width as f32;
+    let scale_y = scale / cfg.img_height as f32;
 
-    let mut img_buffer = image::ImageBuffer::new(img_width, img_height);
+    let mut img_buffer = image::ImageBuffer::new(cfg.img_width, cfg.img_height);
 
     // Fill image background
     for (_, _, pixel) in img_buffer.enumerate_pixels_mut() {
@@ -24,8 +26,8 @@ fn main() {
     // Constant complex number to use for each iteration
     let c = num_complex::Complex::new(-0.4, 0.6);
 
-    for x in 0..img_width {
-        for y in 0..img_height {
+    for x in 0..cfg.img_width {
+        for y in 0..cfg.img_height {
             let zx = y as f32 * scale_x - offset_x;
             let zy = x as f32 * scale_y - offset_y;
 
@@ -41,7 +43,7 @@ fn main() {
             *pixel = image::Rgb([25, i, 25]);
         }
     }
-    
+
     let filename = format!("output_r{}_i{}.png", c.re, c.im);
     img_buffer.save(filename).unwrap();
 }
