@@ -7,11 +7,11 @@ use config::Config;
 fn main() {
     let cfg = Config::new();
 
-    let scale = 1.0;
+    let scale = cfg.scale;
     let aspect_ratio = cfg.img_width as f32 / cfg.img_height as f32;
 
-    let offset_x = scale * 0.5;
-    let offset_y = scale * 0.5 * aspect_ratio;
+    let offset_x = scale * cfg.offsets.0;
+    let offset_y = scale * cfg.offsets.1 * aspect_ratio;
 
     let scale_x = scale * aspect_ratio / cfg.img_width as f32;
     let scale_y = scale / cfg.img_height as f32;

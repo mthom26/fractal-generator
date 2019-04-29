@@ -1,8 +1,13 @@
 use clap::{App, Arg};
 
+const SCALE_LONG_HELP: &str =
+    "The scale of the fractal pattern. A higher value will result in a smaller fractal pattern.\n";
+
 pub struct Config {
     pub img_width: u32,
     pub img_height: u32,
+    pub scale: f32,
+    pub offsets: (f32, f32)
 }
 
 impl Config {
@@ -26,14 +31,53 @@ impl Config {
                     .value_name("height")
                     .default_value("1000"),
             )
+            .arg(
+                Arg::with_name("scale")
+                    .help("The scale of the fractal pattern")
+                    .long_help(SCALE_LONG_HELP)
+                    .short("s")
+                    .long("scale")
+                    .takes_value(true)
+                    .value_name("scale")
+                    .default_value("1.0"),
+            )
+            .arg(
+                Arg::with_name("offsets")
+                    .help("The offset of the fractal origin")
+                    .long_help("TODO")
+                    .short("o")
+                    .long("offset")
+                    .takes_value(true)
+                    .number_of_values(2)
+                    .value_names(&["offset X", "offset Y"])
+            )
             .get_matches();
 
         let img_width: u32 = matches.value_of("img_width").unwrap().parse().unwrap();
         let img_height: u32 = matches.value_of("img_height").unwrap().parse().unwrap();
+        let scale: f32 = matches.value_of("scale").unwrap().parse().unwrap();
+        
+        let offsets: (f32, f32) = match matches.is_present("offsets") {
+            true => {
+                let mut offsets = matches.values_of("offsets").unwrap();
+                let offset_x: f32 = match offsets.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0.5
+                };
+                let offset_y: f32 = match offsets.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0.5
+                };
+                (offset_x, offset_y)
+            },
+            false => (0.5, 0.5)
+        };
 
         Config {
             img_width,
             img_height,
+            scale,
+            offsets
         }
     }
 }
