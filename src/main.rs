@@ -1,6 +1,6 @@
 use image;
+use indicatif::{ProgressBar, ProgressStyle};
 use num_complex;
-
 mod constants;
 
 mod config;
@@ -30,6 +30,13 @@ fn main() {
     // Constant complex number to use for each iteration
     let c = num_complex::Complex::new(-0.4, 0.6);
 
+    println!("Building pattern...");
+    let progress = ProgressBar::new(img_width as u64);
+    progress.set_style(
+        ProgressStyle::default_bar()
+            .template("{bar:80.green.dim/white.dim} {pos:>4}/{len} [{elapsed}]"),
+    );
+
     for x in 0..img_width {
         for y in 0..img_height {
             let zx = y as f32 * scale_x - offset_x;
@@ -46,7 +53,9 @@ fn main() {
             let pixel = img_buffer.get_pixel_mut(x, y);
             *pixel = image::Rgb([25, i, 25]);
         }
+        progress.inc(1);
     }
+    progress.finish();
 
     let filename = format!("output_r{}_i{}.png", c.re, c.im);
     img_buffer.save(filename).unwrap();
