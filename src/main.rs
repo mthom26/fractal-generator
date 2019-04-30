@@ -28,7 +28,7 @@ fn main() {
     }
 
     // Constant complex number to use for each iteration
-    let c = num_complex::Complex::new(-0.4, 0.6);
+    let c = num_complex::Complex::new(cfg.complex_num.0, cfg.complex_num.1);
 
     println!("Building pattern...");
     let progress = ProgressBar::new(img_width as u64);

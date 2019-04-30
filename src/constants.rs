@@ -15,3 +15,5 @@ args are supplied the default is 1000 by 1000 pixels.";
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
 pub const CONFIG_LONG_HELP: &str = "The config file to use. Should be valid json.";
+
+pub const COMPLEX_NUM_LONG_HELP: &str = "The complex number to use as a constant.";

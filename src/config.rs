@@ -1,5 +1,6 @@
 use crate::constants::{
-    CONFIG_LONG_HELP, DIMENSIONS_LONG_HELP, OFFSETS_LONG_HELP, SCALE_LONG_HELP,
+    COMPLEX_NUM_LONG_HELP, CONFIG_LONG_HELP, DIMENSIONS_LONG_HELP, OFFSETS_LONG_HELP,
+    SCALE_LONG_HELP,
 };
 use std::fs;
 
@@ -12,6 +13,7 @@ pub struct Config {
     pub dimensions: (u32, u32),
     pub scale: f32,
     pub offsets: (f32, f32),
+    pub complex_num: (f32, f32),
 }
 
 impl Config {
@@ -46,6 +48,17 @@ impl Config {
                     .takes_value(true)
                     .number_of_values(2)
                     .value_names(&["offset X", "offset Y"]),
+            )
+            .arg(
+                Arg::with_name("complex_num")
+                    .help("The complex number to use as a constant")
+                    .long_help(COMPLEX_NUM_LONG_HELP)
+                    .short("n")
+                    .long("number")
+                    .takes_value(true)
+                    .number_of_values(2)
+                    .allow_hyphen_values(true)
+                    .value_names(&["real", "imaginary"]),
             )
             .arg(
                 Arg::with_name("config")
@@ -96,10 +109,27 @@ impl Config {
             false => (0.5, 0.5),
         };
 
+        let complex_num: (f32, f32) = match matches.is_present("complex_num") {
+            true => {
+                let mut offsets = matches.values_of("complex_num").unwrap();
+                let re: f32 = match offsets.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0.4,
+                };
+                let im: f32 = match offsets.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0.6,
+                };
+                (re, im)
+            }
+            false => (-0.4, 0.6),
+        };
+
         Config {
             dimensions,
             scale,
             offsets,
+            complex_num,
         }
     }
 }
