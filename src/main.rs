@@ -57,6 +57,6 @@ fn main() {
     }
     progress.finish();
 
-    let filename = format!("output_r{}_i{}.png", c.re, c.im);
+    let filename = format!("output_{}_{}i.png", c.re, c.im);
     img_buffer.save(filename).unwrap();
 }
