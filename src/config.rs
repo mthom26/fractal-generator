@@ -1,6 +1,13 @@
-use crate::constants::{DIMENSIONS_LONG_HELP, OFFSETS_LONG_HELP, SCALE_LONG_HELP};
-use clap::{App, Arg};
+use crate::constants::{
+    CONFIG_LONG_HELP, DIMENSIONS_LONG_HELP, OFFSETS_LONG_HELP, SCALE_LONG_HELP,
+};
+use std::fs;
 
+use clap::{App, Arg};
+use serde::{Deserialize, Serialize};
+use serde_json;
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     pub dimensions: (u32, u32),
     pub scale: f32,
@@ -40,7 +47,20 @@ impl Config {
                     .number_of_values(2)
                     .value_names(&["offset X", "offset Y"]),
             )
+            .arg(
+                Arg::with_name("config")
+                    .help("Use a config.json file")
+                    .long_help(CONFIG_LONG_HELP)
+                    .short("c")
+                    .long("config"),
+            )
             .get_matches();
+
+        if matches.is_present("config") {
+            let file_content = fs::read_to_string("config.json").expect("No config file");
+            let config: Config = serde_json::from_str(&file_content).unwrap();
+            return config;
+        }
 
         let scale: f32 = matches.value_of("scale").unwrap().parse().unwrap();
 
