@@ -65,16 +65,18 @@ impl Config {
                     .help("Use a config.json file")
                     .long_help(CONFIG_LONG_HELP)
                     .short("c")
-                    .long("config"),
+                    .long("config")
+                    .takes_value(true)
+                    .value_name("config"),
             )
             .get_matches();
 
-        if matches.is_present("config") {
-            let file_content = fs::read_to_string("config.json").expect("No config file");
+        if let Some(val) = matches.value_of("config") {
+            let file_content = fs::read_to_string(val).expect("Could not read config file");
             let config: Config = serde_json::from_str(&file_content).unwrap();
             return config;
         }
-
+        
         let scale: f32 = matches.value_of("scale").unwrap().parse().unwrap();
 
         let dimensions: (u32, u32) = match matches.is_present("dimensions") {
