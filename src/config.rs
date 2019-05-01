@@ -13,7 +13,7 @@ pub struct Config {
     pub dimensions: (u32, u32),
     pub scale: f32,
     pub offsets: (f32, f32),
-    pub complex_num: (f32, f32),
+    pub complex_num: Vec<(f32, f32)>,
 }
 
 impl Config {
@@ -111,7 +111,7 @@ impl Config {
             false => (0.5, 0.5),
         };
 
-        let complex_num: (f32, f32) = match matches.is_present("complex_num") {
+        let complex_num: Vec<(f32, f32)> = match matches.is_present("complex_num") {
             true => {
                 let mut offsets = matches.values_of("complex_num").unwrap();
                 let re: f32 = match offsets.next() {
@@ -122,9 +122,9 @@ impl Config {
                     Some(val) => val.parse().unwrap(),
                     None => 0.6,
                 };
-                (re, im)
+                vec![(re, im)]
             }
-            false => (-0.4, 0.6),
+            false => vec![(-0.4, 0.6)],
         };
 
         Config {

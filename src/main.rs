@@ -8,6 +8,7 @@ use config::Config;
 
 fn main() {
     let cfg = Config::new();
+    println!("{:#?}", cfg);
     let img_width = cfg.dimensions.0;
     let img_height = cfg.dimensions.1;
 
@@ -28,7 +29,7 @@ fn main() {
     }
 
     // Constant complex number to use for each iteration
-    let c = num_complex::Complex::new(cfg.complex_num.0, cfg.complex_num.1);
+    let c = num_complex::Complex::new(cfg.complex_num[0].0, cfg.complex_num[0].1);
 
     println!("Building pattern...");
     let progress = ProgressBar::new(img_width as u64);
