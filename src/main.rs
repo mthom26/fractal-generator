@@ -1,7 +1,7 @@
 use std::thread;
 
 use image;
-use indicatif::{ProgressBar, ProgressStyle};
+use indicatif::{ProgressBar, ProgressStyle, MultiProgress};
 use num_complex;
 mod constants;
 
@@ -10,7 +10,7 @@ use config::Config;
 
 fn main() {
     let cfg = Config::new();
-    println!("{:#?}", cfg);
+    // println!("{:#?}", cfg);
     let img_width = cfg.dimensions.0;
     let img_height = cfg.dimensions.1;
 
@@ -23,6 +23,11 @@ fn main() {
     let scale_x = scale * aspect_ratio / img_width as f32;
     let scale_y = scale / img_height as f32;
 
+    let p_manager = MultiProgress::new();
+    let p_style = ProgressStyle::default_bar()
+        .template("{msg} {bar:80.green/white} {pos:>4}/{len} [{elapsed}]")
+        .progress_chars("##-");
+
     let mut workers = Vec::new();
     for num in cfg.complex_num.iter() {
         let mut img_buffer = image::ImageBuffer::new(img_width, img_height);
@@ -31,6 +36,10 @@ fn main() {
         for (_, _, pixel) in img_buffer.enumerate_pixels_mut() {
             *pixel = image::Rgb([25, 25, 25]);
         }
+
+        let p_bar = p_manager.add(ProgressBar::new(img_width as u64));
+        p_bar.set_style(p_style.clone());
+        p_bar.set_message("Running   ");
         let c = num_complex::Complex::new(num.0, num.1);
 
         let worker = thread::spawn(move || {
@@ -50,7 +59,9 @@ fn main() {
                     let pixel = img_buffer.get_pixel_mut(x, y);
                     *pixel = image::Rgb([25, i, 25]);
                 }
+                p_bar.inc(1);
             }
+            p_bar.finish_with_message("Finished  ");
             // TODO - Make sure no two files have the same name 
             // for example two identical complex numbers are passed
             let filename = format!("output_{}_{}i.png", c.re, c.im);
@@ -59,6 +70,7 @@ fn main() {
         workers.push(worker);
     }
 
+    p_manager.join_and_clear().unwrap();
     // Wait for threads to finish working
     for t in workers.into_iter() {
         t.join().unwrap();
