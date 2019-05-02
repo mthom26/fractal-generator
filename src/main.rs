@@ -26,7 +26,7 @@ fn main() {
     let p_manager = MultiProgress::new();
     let p_style = ProgressStyle::default_bar()
         .template("{msg} {bar:80.green/white} {pos:>4}/{len} [{elapsed}]")
-        .progress_chars("##-");
+        .progress_chars("=>-");
 
     let mut workers = Vec::new();
     for num in cfg.complex_num.iter() {
@@ -70,7 +70,7 @@ fn main() {
         workers.push(worker);
     }
 
-    p_manager.join_and_clear().unwrap();
+    p_manager.join().unwrap();
     // Wait for threads to finish working
     for t in workers.into_iter() {
         t.join().unwrap();
