@@ -35,11 +35,6 @@ fn main() {
     for num in cfg.complex_num.iter() {
         let mut img_buffer = image::ImageBuffer::new(img_width, img_height);
 
-        // Fill image background
-        for (_, _, pixel) in img_buffer.enumerate_pixels_mut() {
-            *pixel = image::Rgb([bg_red, bg_green, bg_blue]);
-        }
-
         let p_bar = p_manager.add(ProgressBar::new(img_width as u64));
         p_bar.set_style(p_style.clone());
         p_bar.set_message("Running   ");
