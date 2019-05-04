@@ -14,6 +14,8 @@ pub struct Config {
     pub scale: f32,
     pub offsets: (f32, f32),
     pub complex_num: Vec<(f32, f32)>,
+    pub bg_color: (u8, u8, u8),
+    pub fractal_color: (u8, u8, u8),
 }
 
 impl Config {
@@ -69,6 +71,24 @@ impl Config {
                     .takes_value(true)
                     .value_name("config"),
             )
+            .arg(
+                Arg::with_name("background_color")
+                    .help("The color of the background image")
+                    .short("C")
+                    .long("background-color")
+                    .takes_value(true)
+                    .number_of_values(3)
+                    .value_names(&["red", "green", "blue"]),
+            )
+            .arg(
+                Arg::with_name("fractal_color")
+                    .help("The color of the fractal pattern")
+                    .short("f")
+                    .long("fractal-color")
+                    .takes_value(true)
+                    .number_of_values(3)
+                    .value_names(&["red", "green", "blue"]),
+            )
             .get_matches();
 
         if let Some(val) = matches.value_of("config") {
@@ -76,7 +96,7 @@ impl Config {
             let config: Config = serde_json::from_str(&file_content).unwrap();
             return config;
         }
-        
+
         let scale: f32 = matches.value_of("scale").unwrap().parse().unwrap();
 
         let dimensions: (u32, u32) = match matches.is_present("dimensions") {
@@ -127,11 +147,53 @@ impl Config {
             false => vec![(-0.4, 0.6)],
         };
 
+        let bg_color: (u8, u8, u8) = match matches.is_present("background_color") {
+            true => {
+                let mut bg = matches.values_of("background_color").unwrap();
+                let red: u8 = match bg.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 25,
+                };
+                let green: u8 = match bg.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 25,
+                };
+                let blue: u8 = match bg.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 25,
+                };
+                (red, green, blue)
+            }
+            false => (25, 25, 25),
+        };
+
+        let fractal_color: (u8, u8, u8) = match matches.is_present("fractal_color") {
+            true => {
+                let mut fractal = matches.values_of("fractal_color").unwrap();
+                let red: u8 = match fractal.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0,
+                };
+                let green: u8 = match fractal.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 255,
+                };
+                let blue: u8 = match fractal.next() {
+                    Some(val) => val.parse().unwrap(),
+                    None => 0,
+                };
+                (red, green, blue)
+            }
+            false => (0, 255, 0),
+        };
+
         Config {
             dimensions,
             scale,
             offsets,
             complex_num,
+            bg_color,
+            fractal_color,
         }
     }
 }

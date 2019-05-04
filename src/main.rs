@@ -1,7 +1,7 @@
 use std::thread;
 
 use image;
-use indicatif::{ProgressBar, ProgressStyle, MultiProgress};
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use num_complex;
 mod constants;
 
@@ -23,6 +23,8 @@ fn main() {
     let scale_x = scale * aspect_ratio / img_width as f32;
     let scale_y = scale / img_height as f32;
 
+    let (bg_red, bg_green, bg_blue) = (cfg.bg_color.0, cfg.bg_color.1, cfg.bg_color.2);
+
     let p_manager = MultiProgress::new();
     let p_style = ProgressStyle::default_bar()
         .template("{msg} {bar:80.green/white} {pos:>4}/{len} [{elapsed}]")
@@ -34,7 +36,7 @@ fn main() {
 
         // Fill image background
         for (_, _, pixel) in img_buffer.enumerate_pixels_mut() {
-            *pixel = image::Rgb([25, 25, 25]);
+            *pixel = image::Rgb([bg_red, bg_green, bg_blue]);
         }
 
         let p_bar = p_manager.add(ProgressBar::new(img_width as u64));
@@ -62,7 +64,7 @@ fn main() {
                 p_bar.inc(1);
             }
             p_bar.finish_with_message("Finished  ");
-            // TODO - Make sure no two files have the same name 
+            // TODO - Make sure no two files have the same name
             // for example two identical complex numbers are passed
             let filename = format!("output_{}_{}i.png", c.re, c.im);
             img_buffer.save(filename).unwrap();
