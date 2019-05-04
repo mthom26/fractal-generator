@@ -24,6 +24,7 @@ fn main() {
     let scale_y = scale / img_height as f32;
 
     let (bg_red, bg_green, bg_blue) = (cfg.bg_color.0, cfg.bg_color.1, cfg.bg_color.2);
+    let (fg_red, fg_green, fg_blue) = (cfg.fractal_color.0, cfg.fractal_color.1, cfg.fractal_color.2);
 
     let p_manager = MultiProgress::new();
     let p_style = ProgressStyle::default_bar()
@@ -57,9 +58,15 @@ fn main() {
                         z = z * z + c;
                         i += 1;
                     }
-
+                    let a = i as f64 / 255 as f64;
                     let pixel = img_buffer.get_pixel_mut(x, y);
-                    *pixel = image::Rgb([25, i, 25]);
+                    
+                    // blend background and foreground pixels
+                    let out_red = (fg_red as f64 * a) + (bg_red as f64 * (1.0 - a));
+                    let out_green = (fg_green as f64 * a) + (bg_green as f64 * (1.0 - a));
+                    let out_blue = (fg_blue as f64 * a) + (bg_blue as f64 * (1.0 - a));
+
+                    *pixel = image::Rgb([out_red as u8, out_green as u8, out_blue as u8]);
                 }
                 p_bar.inc(1);
             }
